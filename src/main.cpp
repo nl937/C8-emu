@@ -44,10 +44,10 @@ int main(int argc, char *argv[]) {
         cpu.keyenable = true;
         std::cout << "key pressed" << std::endl;
         switch(event.key.code){
-          case sf::Keyboard::Num1: cpu.keycode = 0x1;
-          case sf::Keyboard::Num2: cpu.keycode = 0x2;
-          case sf::Keyboard::Num3: cpu.keycode = 0x3;
-          case sf::Keyboard::Num4: cpu.keycode = 0xC;
+          case sf::Keyboard::T: cpu.keycode = 0x1;
+          case sf::Keyboard::Y: cpu.keycode = 0x2;
+          case sf::Keyboard::U: cpu.keycode = 0x3;
+          case sf::Keyboard::I: cpu.keycode = 0xC;
           case sf::Keyboard::Q: cpu.keycode = 0x4;
           case sf::Keyboard::W: cpu.keycode = 0x5;
           case sf::Keyboard::E: cpu.keycode = 0x6;
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
       } 
     }
 
-    sf::sleep(sf::milliseconds(60/60));
+    //sf::sleep(sf::milliseconds(1));
 
     if(cpu.delaytimer != 0){
       cpu.delaytimer = cpu.delaytimer - 1;
@@ -73,31 +73,35 @@ int main(int argc, char *argv[]) {
       cpu.delaytimer = 60;
     }
     cpu.cycle();
-
-    for(int y = 0; y < 32; y++){
-      for(int x = 0; x < 64; x++){
-        if(cpu.display[x][y] == 1){
-          pixelvector.push_back(0);
-          pixelvector.push_back(255);
-          pixelvector.push_back(0);
-          pixelvector.push_back(255);
-        }
-        else{
-          pixelvector.push_back(0);
-          pixelvector.push_back(0);
-          pixelvector.push_back(0);
-          pixelvector.push_back(255);
-        }
-      }
-    }
     cpu.keyenable = false;
     cpu.keycode = 0;
-    std::copy(pixelvector.begin(), pixelvector.end(), pixels);
-    image.create(64, 32, pixels);
-    texture.loadFromImage(image);
-    sprite.setTexture(texture);
-    sprite.setScale(10,10);
-    window.draw(sprite);
+    if((cpu.instruction == 0x0000 && cpu.nn == 0xE0) | cpu.instruction == 0xD000){
+      for(int y = 0; y < 32; y++){
+        for(int x = 0; x < 64; x++){
+          if(cpu.display[x][y] == 1){
+            pixelvector.push_back(0);
+            pixelvector.push_back(255);
+            pixelvector.push_back(0);
+            pixelvector.push_back(255);
+          }
+          else{
+            pixelvector.push_back(0);
+            pixelvector.push_back(0);
+            pixelvector.push_back(0);
+            pixelvector.push_back(255);
+          }
+        }
+      }
+      std::copy(pixelvector.begin(), pixelvector.end(), pixels);
+      image.create(64, 32, pixels);
+      texture.loadFromImage(image);
+      sprite.setTexture(texture);
+      sprite.setScale(10,10);
+      window.draw(sprite);
+    }
+    else{
+        sf::sleep(sf::milliseconds(1));
+    }
     window.display();
   }
   return 0;

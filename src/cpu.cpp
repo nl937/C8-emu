@@ -81,11 +81,11 @@ void CPU::init(std::string path){
 }
 
 void CPU::cycle(){
-  std::cout << std::hex << pc << std::endl;
+  //std::cout << std::hex << pc << std::endl;
   opcode = 0;
   //Fetch
   opcode = memory[pc] << 8 | memory[pc + 1];
-  std::cout << std::hex << opcode << std::endl;
+  //std::cout << std::hex << opcode << std::endl;
   //Decode
   instruction = opcode & 0xF000;
   x = (opcode & 0x0F00) >> 8;
@@ -108,19 +108,19 @@ void CPU::cycle(){
         case 0xEE:
           pc = stack.top();
           stack.pop();
-          pc += 2;
           break;
       }
       break;
-
+      
     case 0x1000:
       pc = nnn;
       break;
     
     case 0x2000:
-      stack.push(pc);
-      pc = nnn;
       pc += 2;
+      stack.push(pc);
+      pc += 2;
+      pc = nnn;
       break;
 
     case 0x3000:
@@ -346,10 +346,10 @@ void CPU::cycle(){
       break;
 
     case 0xD000:
-      std::cout << std::hex << int(registers[y]) << "\n";
+      //std::cout << std::hex << int(registers[y]) << "\n";
       unsigned char xcord = registers[x] & 63;
       unsigned char ycord = registers[y] & 31;
-      std::cout << std::hex << int(xcord) << " " << std::hex << int(ycord) << "\n";
+      //std::cout << std::hex << int(xcord) << " " << std::hex << int(ycord) << "\n";
       registers[0xF] = 0;
       for(int rows = 0; rows < n; rows++){
         std::bitset<8> spriteroworig = memory[ireg+rows];
@@ -367,13 +367,12 @@ void CPU::cycle(){
             }
             else{
               if(display[x+xcord][ycord+rows] == spriterow[x]){
-                display[x+xcord][ycord+rows] = 0;
                 registers[0xF] = 1;
               }
               else{
-                display[x+xcord][ycord+rows] = spriterow[x];
                 registers[0xF] = 0;
               }
+              display[x+xcord][ycord+rows] ^= spriterow[x];
             }
           }
         }
